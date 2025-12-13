@@ -39,56 +39,25 @@ export default function StepNavigation() {
 
   return (
     <div className="flex items-center justify-between mb-8">
-      {/* Back Button */}
-      <AnimatePresence>
-        <motion.button
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          onClick={goBack}
-          className="flex items-center gap-2 px-2 py-2 text-sm text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 rounded-lg transition-colors duration-200"
-        >
-          <FaChevronLeft className="w-3 h-3" />
-        </motion.button>
-      </AnimatePresence>
-
       {/* Step Indicators */}
       <div className="flex items-center gap-2">
         {steps.map((step, index) => (
           <motion.button
             key={step.id}
-            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => goToStep(step.id)}
-            className={`px-3 py-1 text-xs rounded-full transition-colors duration-200 ${
+            className={`px-3 py-1.5 text-xs rounded-md transition-colors duration-200 ${
               step.id === currentStep
-                ? "bg-white text-black font-semibold"
+                ? "hover:bg-gray-800 text-white font-semibold border-b-2 border-orange-500"
                 : index < currentIndex
-                  ? "bg-gray-800 text-gray-300 hover:bg-gray-700"
-                  : "bg-gray-900 text-gray-500 hover:bg-gray-800"
+                  ? " text-white hover:bg-gray-800"
+                  : " text-white hover:bg-gray-800"
             }`}
           >
             {step.label}
           </motion.button>
         ))}
       </div>
-
-      {/* Next Button */}
-      <AnimatePresence>
-        {currentIndex < steps.length - 1 && (
-          <motion.button
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            onClick={goNext}
-            className="flex items-center gap-2 px-2 py-2 text-sm text-white bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors duration-200"
-          >
-            <FaChevronRight className="w-3 h-3" />
-          </motion.button>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

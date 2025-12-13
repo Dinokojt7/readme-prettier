@@ -2,25 +2,32 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { 
-  FaPlus, 
-  FaTrash, 
-  FaCopy, 
-  FaCheck, 
-  FaLock, 
-  FaEye, 
-  FaEyeSlash, 
+import {
+  FaPlus,
+  FaTrash,
+  FaCopy,
+  FaCheck,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
   FaKey,
   FaCode,
   FaQuestionCircle,
-  FaExclamationTriangle
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import useAppStore from "@/lib/store-persist";
 
 export default function EnvironmentStep() {
   const { environmentVariables, updateField } = useAppStore();
   const [envVars, setEnvVars] = useState([
-    { id: 1, name: "NEXT_PUBLIC_API_URL", value: "https://api.example.com", placeholder: "https://your-api.com", isSecret: false, showValue: true }
+    {
+      id: 1,
+      name: "NEXT_PUBLIC_API_URL",
+      value: "https://api.example.com",
+      placeholder: "https://your-api.com",
+      isSecret: false,
+      showValue: true,
+    },
   ]);
   const [template, setTemplate] = useState("custom");
   const [copiedVar, setCopiedVar] = useState(null);
@@ -32,41 +39,123 @@ export default function EnvironmentStep() {
   // Common environment templates
   const templates = {
     nextjs: [
-      { name: "NEXT_PUBLIC_API_URL", value: "", placeholder: "https://api.example.com", isSecret: false },
-      { name: "NEXT_PUBLIC_APP_URL", value: "", placeholder: "https://app.example.com", isSecret: false },
-      { name: "DATABASE_URL", value: "", placeholder: "postgresql://...", isSecret: true },
-      { name: "NEXTAUTH_SECRET", value: "", placeholder: "generate with: openssl rand -base64 32", isSecret: true },
-      { name: "NEXTAUTH_URL", value: "", placeholder: "https://app.example.com", isSecret: false }
+      {
+        name: "NEXT_PUBLIC_API_URL",
+        value: "",
+        placeholder: "https://api.example.com",
+        isSecret: false,
+      },
+      {
+        name: "NEXT_PUBLIC_APP_URL",
+        value: "",
+        placeholder: "https://app.example.com",
+        isSecret: false,
+      },
+      {
+        name: "DATABASE_URL",
+        value: "",
+        placeholder: "postgresql://...",
+        isSecret: true,
+      },
+      {
+        name: "NEXTAUTH_SECRET",
+        value: "",
+        placeholder: "generate with: openssl rand -base64 32",
+        isSecret: true,
+      },
+      {
+        name: "NEXTAUTH_URL",
+        value: "",
+        placeholder: "https://app.example.com",
+        isSecret: false,
+      },
     ],
     node: [
       { name: "PORT", value: "3000", placeholder: "3000", isSecret: false },
-      { name: "NODE_ENV", value: "development", placeholder: "development | production", isSecret: false },
-      { name: "DATABASE_URL", value: "", placeholder: "postgresql://...", isSecret: true },
-      { name: "JWT_SECRET", value: "", placeholder: "your-jwt-secret-here", isSecret: true },
-      { name: "API_KEY", value: "", placeholder: "your-api-key", isSecret: true }
+      {
+        name: "NODE_ENV",
+        value: "development",
+        placeholder: "development | production",
+        isSecret: false,
+      },
+      {
+        name: "DATABASE_URL",
+        value: "",
+        placeholder: "postgresql://...",
+        isSecret: true,
+      },
+      {
+        name: "JWT_SECRET",
+        value: "",
+        placeholder: "your-jwt-secret-here",
+        isSecret: true,
+      },
+      {
+        name: "API_KEY",
+        value: "",
+        placeholder: "your-api-key",
+        isSecret: true,
+      },
     ],
     react: [
-      { name: "REACT_APP_API_URL", value: "", placeholder: "https://api.example.com", isSecret: false },
-      { name: "REACT_APP_FIREBASE_API_KEY", value: "", placeholder: "your-firebase-api-key", isSecret: true },
-      { name: "REACT_APP_GA_TRACKING_ID", value: "", placeholder: "UA-XXXXX-Y", isSecret: false }
+      {
+        name: "REACT_APP_API_URL",
+        value: "",
+        placeholder: "https://api.example.com",
+        isSecret: false,
+      },
+      {
+        name: "REACT_APP_FIREBASE_API_KEY",
+        value: "",
+        placeholder: "your-firebase-api-key",
+        isSecret: true,
+      },
+      {
+        name: "REACT_APP_GA_TRACKING_ID",
+        value: "",
+        placeholder: "UA-XXXXX-Y",
+        isSecret: false,
+      },
     ],
     firebase: [
-      { name: "FIREBASE_API_KEY", value: "", placeholder: "your-api-key", isSecret: true },
-      { name: "FIREBASE_AUTH_DOMAIN", value: "", placeholder: "your-project.firebaseapp.com", isSecret: false },
-      { name: "FIREBASE_PROJECT_ID", value: "", placeholder: "your-project-id", isSecret: false },
-      { name: "FIREBASE_STORAGE_BUCKET", value: "", placeholder: "your-project.appspot.com", isSecret: false }
+      {
+        name: "FIREBASE_API_KEY",
+        value: "",
+        placeholder: "your-api-key",
+        isSecret: true,
+      },
+      {
+        name: "FIREBASE_AUTH_DOMAIN",
+        value: "",
+        placeholder: "your-project.firebaseapp.com",
+        isSecret: false,
+      },
+      {
+        name: "FIREBASE_PROJECT_ID",
+        value: "",
+        placeholder: "your-project-id",
+        isSecret: false,
+      },
+      {
+        name: "FIREBASE_STORAGE_BUCKET",
+        value: "",
+        placeholder: "your-project.appspot.com",
+        isSecret: false,
+      },
     ],
-    custom: []
+    custom: [],
   };
 
   // Initialize with store data or default
   useEffect(() => {
     if (environmentVariables && environmentVariables.length > 0) {
-      setEnvVars(environmentVariables.map((item, index) => ({
-        ...item,
-        id: index + 1,
-        showValue: !item.isSecret
-      })));
+      setEnvVars(
+        environmentVariables.map((item, index) => ({
+          ...item,
+          id: index + 1,
+          showValue: !item.isSecret,
+        })),
+      );
     }
   }, [environmentVariables]);
 
@@ -81,73 +170,73 @@ export default function EnvironmentStep() {
   // Validate environment variable name
   const validateName = (name) => {
     const errors = [];
-    
+
     if (!name.trim()) {
       return ["Name is required"];
     }
-    
+
     if (!/^[A-Z_][A-Z0-9_]*$/.test(name)) {
       errors.push("Must be uppercase with underscores");
     }
-    
+
     if (name.length > 50) {
       errors.push("Max 50 characters");
     }
-    
+
     // Check for duplicates
-    const duplicateCount = envVars.filter(v => v.name === name).length;
+    const duplicateCount = envVars.filter((v) => v.name === name).length;
     if (duplicateCount > 1) {
       errors.push("Duplicate variable name");
     }
-    
+
     return errors;
   };
 
   const addVariable = () => {
-    const newId = Math.max(0, ...envVars.map(v => v.id)) + 1;
+    const newId = Math.max(0, ...envVars.map((v) => v.id)) + 1;
     const newVar = {
       id: newId,
       name: "",
       value: "",
       placeholder: "your-value-here",
       isSecret: false,
-      showValue: true
+      showValue: true,
     };
-    
+
     const updated = [...envVars, newVar];
     setEnvVars(updated);
     lastAddedRef.current = `name-${newId}`;
-    
+
     // Clear validation for new row
-    setValidationErrors(prev => ({
+    setValidationErrors((prev) => ({
       ...prev,
-      [newId]: []
+      [newId]: [],
     }));
   };
 
   const updateVariable = (id, field, value) => {
-    const updated = envVars.map(v => 
-      v.id === id ? { ...v, [field]: value } : v
+    const updated = envVars.map((v) =>
+      v.id === id ? { ...v, [field]: value } : v,
     );
-    
+
     setEnvVars(updated);
-    
+
     // Validate on change
-    if (field === 'name') {
+    if (field === "name") {
       const errors = validateName(value);
-      setValidationErrors(prev => ({
+      setValidationErrors((prev) => ({
         ...prev,
-        [id]: errors
+        [id]: errors,
       }));
     }
   };
 
   const removeVariable = (id) => {
-    const updated = envVars.filter(v => v.id !== id);
+    const updated = envVars.filter((v) => v.id !== id);
     setEnvVars(updated);
-    
+
     // Remove validation errors for removed item
-    setValidationErrors(prev => {
+    setValidationErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[id];
       return newErrors;
@@ -155,15 +244,15 @@ export default function EnvironmentStep() {
   };
 
   const toggleSecret = (id) => {
-    const updated = envVars.map(v => 
-      v.id === id ? { ...v, isSecret: !v.isSecret, showValue: !v.isSecret } : v
+    const updated = envVars.map((v) =>
+      v.id === id ? { ...v, isSecret: !v.isSecret, showValue: !v.isSecret } : v,
     );
     setEnvVars(updated);
   };
 
   const toggleShowValue = (id) => {
-    const updated = envVars.map(v => 
-      v.id === id ? { ...v, showValue: !v.showValue } : v
+    const updated = envVars.map((v) =>
+      v.id === id ? { ...v, showValue: !v.showValue } : v,
     );
     setEnvVars(updated);
   };
@@ -180,18 +269,27 @@ export default function EnvironmentStep() {
 
   const applyTemplate = (templateName) => {
     setTemplate(templateName);
-    
+
     if (templateName === "custom") {
-      setEnvVars([{ id: 1, name: "", value: "", placeholder: "", isSecret: false, showValue: true }]);
+      setEnvVars([
+        {
+          id: 1,
+          name: "",
+          value: "",
+          placeholder: "",
+          isSecret: false,
+          showValue: true,
+        },
+      ]);
       return;
     }
-    
+
     const templateVars = templates[templateName].map((item, index) => ({
       ...item,
       id: index + 1,
-      showValue: !item.isSecret
+      showValue: !item.isSecret,
     }));
-    
+
     setEnvVars(templateVars);
     setValidationErrors({});
   };
@@ -199,24 +297,27 @@ export default function EnvironmentStep() {
   const handleBulkEditor = () => {
     if (showBulkEditor) {
       // Parse bulk content back to variables
-      const lines = bulkContent.split('\n').filter(line => line.trim());
+      const lines = bulkContent.split("\n").filter((line) => line.trim());
       const newVars = [];
-      
+
       lines.forEach((line, index) => {
-        const [name, ...valueParts] = line.split('=');
+        const [name, ...valueParts] = line.split("=");
         if (name && valueParts.length > 0) {
-          const value = valueParts.join('=');
+          const value = valueParts.join("=");
           newVars.push({
             id: index + 1,
             name: name.trim(),
             value: value.trim(),
             placeholder: "",
-            isSecret: value.includes('secret') || value.includes('key') || value.includes('password'),
-            showValue: true
+            isSecret:
+              value.includes("secret") ||
+              value.includes("key") ||
+              value.includes("password"),
+            showValue: true,
           });
         }
       });
-      
+
       if (newVars.length > 0) {
         setEnvVars(newVars);
         setTemplate("custom");
@@ -224,39 +325,43 @@ export default function EnvironmentStep() {
     } else {
       // Convert current vars to bulk format
       const content = envVars
-        .filter(v => v.name.trim() && v.value.trim())
-        .map(v => `${v.name}=${v.value}`)
-        .join('\n');
+        .filter((v) => v.name.trim() && v.value.trim())
+        .map((v) => `${v.name}=${v.value}`)
+        .join("\n");
       setBulkContent(content);
     }
-    
+
     setShowBulkEditor(!showBulkEditor);
   };
 
   const generateMarkdown = () => {
-    const activeVars = envVars.filter(v => v.name.trim() && v.value.trim());
-    
+    const activeVars = envVars.filter((v) => v.name.trim() && v.value.trim());
+
     if (activeVars.length === 0) {
       return "";
     }
-    
+
     let content = "### Environment Variables\n\n";
-    content += "Create a `.env.local` file in the root directory and add the following variables:\n\n";
+    content +=
+      "Create a `.env.local` file in the root directory and add the following variables:\n\n";
     content += "```bash\n";
-    
-    activeVars.forEach(v => {
-      const value = v.isSecret ? `your_${v.name.toLowerCase().replace(/_/g, '_')}_here` : v.value;
+
+    activeVars.forEach((v) => {
+      const value = v.isSecret
+        ? `your_${v.name.toLowerCase().replace(/_/g, "_")}_here`
+        : v.value;
       content += `${v.name}=${value}\n`;
     });
-    
+
     content += "```\n\n";
-    
+
     // Add explanation for secret variables
-    const hasSecrets = activeVars.some(v => v.isSecret);
+    const hasSecrets = activeVars.some((v) => v.isSecret);
     if (hasSecrets) {
-      content += "**Note**: Variables marked with 🔒 are secret. Replace placeholder values with your actual secrets.\n\n";
+      content +=
+        "**Note**: Variables marked with 🔒 are secret. Replace placeholder values with your actual secrets.\n\n";
     }
-    
+
     return content;
   };
 
@@ -264,8 +369,8 @@ export default function EnvironmentStep() {
     // Validate all before saving
     const errors = {};
     let hasErrors = false;
-    
-    envVars.forEach(v => {
+
+    envVars.forEach((v) => {
       if (v.name.trim()) {
         const nameErrors = validateName(v.name);
         if (nameErrors.length > 0) {
@@ -274,29 +379,38 @@ export default function EnvironmentStep() {
         }
       }
     });
-    
+
     setValidationErrors(errors);
-    
+
     if (hasErrors) {
       return;
     }
-    
+
     const filteredVars = envVars
-      .filter(v => v.name.trim())
+      .filter((v) => v.name.trim())
       .map(({ id, showValue, ...rest }) => rest);
-    
+
     updateField("environmentVariables", filteredVars);
   };
 
   const handleReset = () => {
-    setEnvVars([{ id: 1, name: "", value: "", placeholder: "", isSecret: false, showValue: true }]);
+    setEnvVars([
+      {
+        id: 1,
+        name: "",
+        value: "",
+        placeholder: "",
+        isSecret: false,
+        showValue: true,
+      },
+    ]);
     setTemplate("custom");
     setValidationErrors({});
     setShowBulkEditor(false);
   };
 
   const isVariableValid = (id) => {
-    const varData = envVars.find(v => v.id === id);
+    const varData = envVars.find((v) => v.id === id);
     return varData?.name.trim() && varData?.value.trim();
   };
 
@@ -308,7 +422,9 @@ export default function EnvironmentStep() {
     >
       {/* Header */}
       <div>
-        <h2 className="text-2xl font-semibold text-white mb-2">🔐 Environment Variables</h2>
+        <h2 className="text-2xl font-semibold text-white mb-2">
+          🔐 Environment Variables
+        </h2>
         <p className="text-gray-400 text-sm">
           Configure environment variables for your project
         </p>
@@ -328,9 +444,11 @@ export default function EnvironmentStep() {
                   : "bg-gray-800 text-gray-300 hover:bg-gray-700"
               }`}
             >
-              {tpl === "custom" ? "Custom" : 
-               tpl === "nextjs" ? "Next.js" : 
-               tpl.charAt(0).toUpperCase() + tpl.slice(1)}
+              {tpl === "custom"
+                ? "Custom"
+                : tpl === "nextjs"
+                  ? "Next.js"
+                  : tpl.charAt(0).toUpperCase() + tpl.slice(1)}
             </button>
           ))}
         </div>
@@ -373,7 +491,7 @@ export default function EnvironmentStep() {
               )}
             </button>
           </div>
-          
+
           <textarea
             value={bulkContent}
             onChange={(e) => setBulkContent(e.target.value)}
@@ -381,7 +499,7 @@ export default function EnvironmentStep() {
             rows={8}
             className="w-full font-mono text-sm bg-gray-900 text-gray-300 border border-gray-700 rounded-lg p-3 focus:outline-none resize-none"
           />
-          
+
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <FaQuestionCircle className="w-4 h-4" />
             <span>Format: VARIABLE_NAME=value (one per line)</span>
@@ -403,10 +521,18 @@ export default function EnvironmentStep() {
                       )}
                     </div>
                     <input
-                      ref={lastAddedRef === `name-${variable.id}` ? (el) => { if (el) el.focus(); } : null}
+                      ref={
+                        lastAddedRef === `name-${variable.id}`
+                          ? (el) => {
+                              if (el) el.focus();
+                            }
+                          : null
+                      }
                       type="text"
                       value={variable.name}
-                      onChange={(e) => updateVariable(variable.id, "name", e.target.value)}
+                      onChange={(e) =>
+                        updateVariable(variable.id, "name", e.target.value)
+                      }
                       placeholder="e.g., DATABASE_URL"
                       className={`w-full font-mono text-sm bg-gray-900 border ${
                         validationErrors[variable.id]?.length > 0
@@ -433,11 +559,15 @@ export default function EnvironmentStep() {
                         <button
                           onClick={() => toggleSecret(variable.id)}
                           className={`p-1 rounded ${
-                            variable.isSecret 
-                              ? "text-yellow-400 bg-yellow-900/20" 
+                            variable.isSecret
+                              ? "text-yellow-400 bg-yellow-900/20"
                               : "text-gray-400 hover:text-white"
                           }`}
-                          title={variable.isSecret ? "Secret variable" : "Mark as secret"}
+                          title={
+                            variable.isSecret
+                              ? "Secret variable"
+                              : "Mark as secret"
+                          }
                         >
                           <FaLock className="w-3 h-3" />
                         </button>
@@ -445,7 +575,9 @@ export default function EnvironmentStep() {
                           <button
                             onClick={() => toggleShowValue(variable.id)}
                             className="p-1 text-gray-400 hover:text-white"
-                            title={variable.showValue ? "Hide value" : "Show value"}
+                            title={
+                              variable.showValue ? "Hide value" : "Show value"
+                            }
                           >
                             {variable.showValue ? (
                               <FaEyeSlash className="w-3 h-3" />
@@ -458,15 +590,26 @@ export default function EnvironmentStep() {
                     </div>
                     <div className="relative">
                       <input
-                        type={variable.isSecret && !variable.showValue ? "password" : "text"}
+                        type={
+                          variable.isSecret && !variable.showValue
+                            ? "password"
+                            : "text"
+                        }
                         value={variable.value}
-                        onChange={(e) => updateVariable(variable.id, "value", e.target.value)}
+                        onChange={(e) =>
+                          updateVariable(variable.id, "value", e.target.value)
+                        }
                         placeholder={variable.placeholder || "Enter value"}
                         className="w-full font-mono text-sm bg-gray-900 border border-gray-700 text-white rounded-lg p-2.5 focus:outline-none focus:border-blue-500 pr-10"
                       />
                       {isVariableValid(variable.id) && (
                         <button
-                          onClick={() => handleCopy(`${variable.name}=${variable.value}`, variable.id)}
+                          onClick={() =>
+                            handleCopy(
+                              `${variable.name}=${variable.value}`,
+                              variable.id,
+                            )
+                          }
                           className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-gray-400 hover:text-white"
                           title="Copy variable"
                         >
@@ -481,14 +624,13 @@ export default function EnvironmentStep() {
                   </div>
 
                   {/* Actions */}
-                  <div className="md:col-span-2 flex items-end">
+                  <div className="md:col-span-2 flex items-center">
                     <button
                       onClick={() => removeVariable(variable.id)}
-                      className="w-full py-2.5 bg-red-900/20 hover:bg-red-900/30 text-red-400 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                      className="px-2 py-2 text-center bg-red-900/20 text-xs hover:bg-red-900/30 text-red-400 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                       disabled={envVars.length <= 1}
                     >
-                      <FaTrash className="w-3 h-3" />
-                      Remove
+                      <FaTrash className="w-4 h-3" />
                     </button>
                   </div>
                 </div>
@@ -510,16 +652,22 @@ export default function EnvironmentStep() {
       {/* Stats */}
       <div className="flex items-center justify-between text-sm">
         <div className="text-gray-400">
-          {envVars.filter(v => v.name.trim() && v.value.trim()).length} of {envVars.length} variables configured
+          {envVars.filter((v) => v.name.trim() && v.value.trim()).length} of{" "}
+          {envVars.length} variables configured
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <FaLock className="w-3 h-3 text-yellow-400" />
-            <span className="text-gray-400">{envVars.filter(v => v.isSecret).length} secret</span>
+            <span className="text-gray-400">
+              {envVars.filter((v) => v.isSecret).length} secret
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <FaKey className="w-3 h-3 text-blue-400" />
-            <span className="text-gray-400">{envVars.filter(v => v.name.trim() && !v.value.trim()).length} incomplete</span>
+            <span className="text-gray-400">
+              {envVars.filter((v) => v.name.trim() && !v.value.trim()).length}{" "}
+              incomplete
+            </span>
           </div>
         </div>
       </div>
@@ -545,8 +693,8 @@ export default function EnvironmentStep() {
             )}
           </button>
         </div>
-        
-        {envVars.filter(v => v.name.trim() && v.value.trim()).length > 0 ? (
+
+        {envVars.filter((v) => v.name.trim() && v.value.trim()).length > 0 ? (
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-4 overflow-x-auto">
             <pre className="text-sm text-gray-300 whitespace-pre-wrap font-mono">
               {generateMarkdown()}
@@ -556,7 +704,9 @@ export default function EnvironmentStep() {
           <div className="bg-gray-900/50 border border-gray-800 rounded-lg p-8 text-center">
             <FaKey className="w-8 h-8 text-gray-600 mx-auto mb-3" />
             <p className="text-gray-500">No environment variables configured</p>
-            <p className="text-sm text-gray-600 mt-1">Add variables above to see preview</p>
+            <p className="text-sm text-gray-600 mt-1">
+              Add variables above to see preview
+            </p>
           </div>
         )}
       </div>
@@ -571,9 +721,11 @@ export default function EnvironmentStep() {
         </button>
         <button
           onClick={handleSave}
-          disabled={envVars.filter(v => v.name.trim() && v.value.trim()).length === 0}
+          disabled={
+            envVars.filter((v) => v.name.trim() && v.value.trim()).length === 0
+          }
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-            envVars.filter(v => v.name.trim() && v.value.trim()).length === 0
+            envVars.filter((v) => v.name.trim() && v.value.trim()).length === 0
               ? "bg-gray-800 text-gray-500 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}

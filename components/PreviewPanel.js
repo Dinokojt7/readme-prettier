@@ -142,10 +142,6 @@ export default function PreviewPanel({ onClose }) {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("Store state changed:", useAppStore.getState());
-  }, []);
-
   // Subscribe to store changes
   useEffect(() => {
     // Initial update
@@ -228,27 +224,16 @@ export default function PreviewPanel({ onClose }) {
               <FaPlus className="w-3 h-3" />
             </button>
           </div>
-
-          {/* Close button */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="p-2 text-gray-400 hover:text-white ml-1"
-              title="Close preview"
-            >
-              <FaTimes className="w-4 h-4" />
-            </button>
-          )}
         </div>
       </div>
 
       {/* Content Area with minimal floating buttons */}
       <div className="flex-1 overflow-hidden min-h-0 relative">
         {/* Minimal VS Code-style Copy/Download Buttons - Inline top right */}
-        <div className="absolute top-0 right-0 z-10 flex items-center gap-3 p-2">
+        <div className="absolute top-0 right-0 z-10 w-full flex items-center gap-3 bg-[#0d1117]">
           <button
             onClick={handleCopyToClipboard}
-            className={`flex items-center gap-1.5 text-xs transition-colors ${
+            className={`bg-[#0d1117] p-2 flex items-center gap-1.5 text-xs transition-colors ${
               copySuccess ? "text-green-400" : "text-gray-400 hover:text-white"
             }`}
             title="Copy README to clipboard"
@@ -270,7 +255,7 @@ export default function PreviewPanel({ onClose }) {
 
           <button
             onClick={handleDownload}
-            className={`flex items-center gap-1.5 text-xs transition-colors ${
+            className={`bg-[#0d1117] p-2 flex items-center gap-1.5 text-xs transition-colors ${
               downloadSuccess
                 ? "text-green-400"
                 : "text-gray-400 hover:text-white"
@@ -297,7 +282,13 @@ export default function PreviewPanel({ onClose }) {
           </div>
         ) : viewMode === "raw" ? (
           // Raw Markdown View
-          <div className="h-full overflow-auto p-4 pt-8">
+          <div
+            className="h-full overflow-auto p-4 pt-8"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
             <pre
               className="text-sm font-mono text-gray-300 whitespace-pre-wrap break-words"
               style={{
@@ -311,7 +302,13 @@ export default function PreviewPanel({ onClose }) {
           </div>
         ) : (
           // Rendered Markdown View
-          <div className="h-full overflow-auto">
+          <div
+            className="h-full overflow-auto"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
             <div className="preview-container relative">
               <motion.div
                 key="rendered-content"
