@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { FaPlus, FaTrash, FaSmile } from "react-icons/fa";
-import EmojiPicker from "@/components/ui/EmojiPicker";
+import EmojiPicker from "@/components/ui/GlobalEmojiPicker";
 import useAppStore from "@/lib/store-persist";
 
 export default function FeaturesStep() {
