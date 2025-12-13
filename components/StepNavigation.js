@@ -2,15 +2,18 @@
 
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import useAppStore from "@/lib/store";
+import useAppStore from "@/lib/store-persist";
 
 const steps = [
+  { id: "projectLogo", label: "Logo" },
   { id: "projectName", label: "Project" },
   { id: "description", label: "Description" },
   { id: "badges", label: "Badges" },
   { id: "features", label: "Features" },
   { id: "installation", label: "Installation" },
   { id: "environment", label: "Environment" },
+  { id: "projectStructure", label: "Structure" },
+  { id: "author", label: "Author" },
   { id: "preview", label: "Preview" },
 ];
 
@@ -38,19 +41,16 @@ export default function StepNavigation() {
     <div className="flex items-center justify-between mb-8">
       {/* Back Button */}
       <AnimatePresence>
-        {currentIndex > 0 && (
-          <motion.button
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            onClick={goBack}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 rounded-lg transition-colors duration-200"
-          >
-            <FaChevronLeft className="w-3 h-3" />
-            Back
-          </motion.button>
-        )}
+        <motion.button
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          onClick={goBack}
+          className="flex items-center gap-2 px-2 py-2 text-sm text-gray-400 hover:text-white border border-gray-800 hover:border-gray-600 rounded-lg transition-colors duration-200"
+        >
+          <FaChevronLeft className="w-3 h-3" />
+        </motion.button>
       </AnimatePresence>
 
       {/* Step Indicators */}
@@ -83,9 +83,8 @@ export default function StepNavigation() {
             exit={{ opacity: 0, x: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             onClick={goNext}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-white bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors duration-200"
+            className="flex items-center gap-2 px-2 py-2 text-sm text-white bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors duration-200"
           >
-            Next
             <FaChevronRight className="w-3 h-3" />
           </motion.button>
         )}

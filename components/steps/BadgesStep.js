@@ -1,22 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaSearch, FaTimes, FaCheck, FaTag } from "react-icons/fa";
-import useAppStore, { badgeConfig, searchBadges } from "@/lib/store";
+import {
+  FaSearch,
+  FaTimes,
+  FaCheck,
+  FaTag,
+  FaFilter,
+  FaChevronDown,
+  FaChevronUp,
+} from "react-icons/fa";
+import useAppStore, { badgeConfig, searchBadges } from "@/lib/store-persist";
 
-// Category configuration
 const categories = [
-  { id: "all", label: "All", color: "bg-gray-800" },
-  { id: "framework", label: "Frameworks", color: "bg-blue-900/30" },
-  { id: "styling", label: "Styling", color: "bg-purple-900/30" },
-  { id: "backend", label: "Backend", color: "bg-green-900/30" },
-  { id: "database", label: "Databases", color: "bg-yellow-900/30" },
-  { id: "language", label: "Languages", color: "bg-red-900/30" },
-  { id: "tool", label: "Tools", color: "bg-indigo-900/30" },
-  { id: "deployment", label: "Deployment", color: "bg-gray-700" },
-  { id: "license", label: "License", color: "bg-teal-900/30" },
-  { id: "status", label: "Status", color: "bg-pink-900/30" },
+  { id: "all", label: "All Categories" },
+  { id: "framework", label: "Frameworks" },
+  { id: "styling", label: "Styling" },
+  { id: "backend", label: "Backend" },
+  { id: "database", label: "Databases" },
+  { id: "language", label: "Languages" },
+  { id: "tool", label: "Tools" },
+  { id: "deployment", label: "Deployment" },
+  { id: "license", label: "License" },
+  { id: "status", label: "Status" },
 ];
 
 export default function BadgesStep() {
@@ -25,12 +32,60 @@ export default function BadgesStep() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const categoryDropdownRef = useRef(null);
 
-  // Filter badges based on search and category
+  // Click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        categoryDropdownRef.current &&
+        !categoryDropdownRef.current.contains(event.target)
+      ) {
+        setShowCategoryDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Enhanced search with priority: name > message > category
   useEffect(() => {
     if (searchQuery.trim()) {
       setIsSearching(true);
-      const results = searchBadges(searchQuery);
+
+      // Get all badges for filtering
+      const allBadges = Object.entries(badgeConfig).map(([id, badge]) => ({
+        id,
+        ...badge,
+      }));
+
+      const searchTerm = searchQuery.toLowerCase();
+
+      // Priority 1: Exact name matches
+      const nameMatches = allBadges.filter((badge) =>
+        badge.label.toLowerCase().includes(searchTerm),
+      );
+
+      // Priority 2: Message matches (like "Cloud" in Firebase)
+      const messageMatches = allBadges
+        .filter(
+          (badge) =>
+            badge.message && badge.message.toLowerCase().includes(searchTerm),
+        )
+        .filter((badge) => !nameMatches.find((n) => n.id === badge.id));
+
+      // Priority 3: Category matches
+      const categoryMatches = allBadges
+        .filter((badge) => badge.category.toLowerCase().includes(searchTerm))
+        .filter(
+          (badge) =>
+            !nameMatches.find((n) => n.id === badge.id) &&
+            !messageMatches.find((m) => m.id === badge.id),
+        );
+
+      // Combine with priority order
+      const results = [...nameMatches, ...messageMatches, ...categoryMatches];
       setSearchResults(results);
     } else {
       setIsSearching(false);
@@ -53,18 +108,19 @@ export default function BadgesStep() {
   };
 
   const displayBadges = getDisplayBadges();
+  const selectedCategoryLabel = categories.find(
+    (c) => c.id === selectedCategory,
+  )?.label;
 
-  // Handle badge click
   const handleBadgeClick = (badgeId) => {
     addBadge(badgeId);
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
       className="space-y-6"
     >
       {/* Header */}
@@ -73,75 +129,105 @@ export default function BadgesStep() {
           Select Badges
         </h2>
         <p className="text-gray-400 text-sm">
-          Choose badges to showcase your tech stack. Search or browse by
+          Choose badges to showcase your tech stack. Search or filter by
           category.
         </p>
       </div>
 
-      {/* Search Input */}
-      <div className="relative">
-        <div className="relative">
-          <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
+      {/* Search and Filter Row */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        {/* Search Input */}
+        <div className="flex-1 relative">
+          <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-4 h-4" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search badges (e.g., React, Node.js, MIT License)..."
-            className="w-full pl-12 pr-10 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Search badges (e.g., Firebase, Next.js, MIT)..."
+            className="w-full pl-10 pr-8 py-2.5 text-sm bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-white"
             >
-              <FaTimes className="w-4 h-4" />
+              <FaTimes className="w-3.5 h-3.5" />
             </button>
           )}
         </div>
 
-        {/* Search Results Count */}
-        <AnimatePresence>
-          {isSearching && (
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="text-sm text-gray-500 mt-2"
-            >
-              Found {searchResults.length} badge
-              {searchResults.length !== 1 ? "s" : ""}
-            </motion.p>
-          )}
-        </AnimatePresence>
-      </div>
+        {/* Category Dropdown */}
+        <div className="relative" ref={categoryDropdownRef}>
+          <button
+            onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
+            className="flex items-center justify-between gap-2 px-4 py-2.5 text-sm bg-gray-900 border border-gray-700 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors w-full sm:w-48"
+          >
+            <span className="truncate">{selectedCategoryLabel}</span>
+            {showCategoryDropdown ? (
+              <FaChevronUp className="w-3.5 h-3.5 flex-shrink-0" />
+            ) : (
+              <FaChevronDown className="w-3.5 h-3.5 flex-shrink-0" />
+            )}
+          </button>
 
-      {/* Category Filters */}
-      <div>
-        <h3 className="text-sm font-medium text-gray-400 mb-3">
-          Browse by Category
-        </h3>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-3 py-1.5 text-xs rounded-full transition-all duration-200 ${
-                selectedCategory === category.id
-                  ? `${category.color} text-white border border-gray-600`
-                  : "bg-gray-900 text-gray-400 hover:bg-gray-800 border border-gray-800"
-              }`}
-            >
-              {category.label}
-            </button>
-          ))}
+          <AnimatePresence>
+            {showCategoryDropdown && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute z-50 mt-1 w-full bg-gray-900 border border-gray-700 rounded-lg shadow-2xl overflow-hidden"
+              >
+                <div className="max-h-60 overflow-y-auto py-1">
+                  {categories.map((category) => (
+                    <button
+                      key={category.id}
+                      onClick={() => {
+                        setSelectedCategory(category.id);
+                        setShowCategoryDropdown(false);
+                      }}
+                      className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${
+                        selectedCategory === category.id
+                          ? "bg-blue-600 text-white"
+                          : "text-gray-300 hover:bg-gray-800"
+                      }`}
+                    >
+                      {category.label}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
+
+      {/* Search Results Count */}
+      <AnimatePresence>
+        {isSearching && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="text-sm text-gray-500"
+          >
+            Found {searchResults.length} badge
+            {searchResults.length !== 1 ? "s" : ""}
+            {searchQuery && (
+              <span className="ml-2 text-gray-600">
+                • Priority: Name → Message → Category
+              </span>
+            )}
+          </motion.p>
+        )}
+      </AnimatePresence>
 
       {/* Selected Badges Preview */}
       {badges.length > 0 && (
         <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
           className="border border-gray-800 rounded-lg p-4 bg-gray-900/50"
         >
           <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
@@ -172,7 +258,7 @@ export default function BadgesStep() {
         </motion.div>
       )}
 
-      {/* Badges Grid */}
+      {/* Badges Grid - 3 per row */}
       <div>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-white">
@@ -180,7 +266,7 @@ export default function BadgesStep() {
               ? "Search Results"
               : selectedCategory === "all"
                 ? "Popular Badges"
-                : `${categories.find((c) => c.id === selectedCategory)?.label} Badges`}
+                : `${selectedCategoryLabel}`}
           </h3>
           <span className="text-xs text-gray-500">
             {displayBadges.length} badge{displayBadges.length !== 1 ? "s" : ""}
@@ -196,47 +282,53 @@ export default function BadgesStep() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <AnimatePresence>
               {displayBadges.map((badge) => {
                 const isSelected = badges.includes(badge.id);
                 return (
                   <motion.button
                     key={badge.id}
-                    layoutId={`badge-${badge.id}`}
-                    initial={{ opacity: 0, scale: 0.9 }}
+                    initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
                     onClick={() => handleBadgeClick(badge.id)}
-                    className={`relative p-4 rounded-lg border transition-all duration-200 flex flex-col items-center justify-center ${
+                    className={`relative p-4 rounded-lg border transition-all duration-150 flex flex-col items-center ${
                       isSelected
-                        ? "bg-blue-900/20 border-blue-500 ring-2 ring-blue-500/20"
+                        ? "bg-blue-900/20 border-blue-500 ring-1 ring-blue-500/30"
                         : "bg-gray-900 border-gray-800 hover:bg-gray-800 hover:border-gray-700"
                     }`}
                   >
-                    {/* Badge Image Preview */}
+                    {/* Badge Image with message */}
                     <div className="mb-2">
                       <img
                         src={badge.url}
                         alt={badge.label}
-                        className="h-6 w-auto"
+                        className="h-4 w-auto"
                         onError={(e) => {
                           e.target.style.display = "none";
-                          e.target.parentElement.innerHTML = `<div class="h-6 w-20 bg-gray-700 rounded"></div>`;
+                          e.target.parentElement.innerHTML = `<div class="h-4 flex items-center justify-center">
+                            <span class="text-sm text-gray-400">${badge.label}</span>
+                          </div>`;
                         }}
                       />
                     </div>
 
-                    {/* Badge Label */}
-                    <span
-                      className={`text-xs font-medium text-center ${
-                        isSelected ? "text-blue-300" : "text-gray-300"
-                      }`}
-                    >
-                      {badge.label}
-                    </span>
+                    {/* Badge Label & Message */}
+                    <div className="text-center">
+                      <span
+                        className={`text-xs font-medium ${
+                          isSelected ? "text-blue-300" : "text-gray-300"
+                        }`}
+                      >
+                        {badge.label}
+                      </span>
+                      {badge.message && (
+                        <p className="text-[10px] text-gray-400 mt-0.5">
+                          {badge.message}
+                        </p>
+                      )}
+                    </div>
 
                     {/* Category Tag */}
                     <span className="text-[10px] text-gray-500 mt-1">
@@ -250,7 +342,7 @@ export default function BadgesStep() {
                         animate={{ scale: 1 }}
                         className="absolute -top-2 -right-2 bg-blue-500 text-white p-1 rounded-full"
                       >
-                        <FaCheck className="w-3 h-3" />
+                        <FaCheck className="w-2.5 h-2.5" />
                       </motion.div>
                     )}
                   </motion.button>

@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import useAppStore from "@/lib/store";
+import useAppStore from "@/lib/store-persist";
+import InputWithEmoji from "@/components/ui/InputWithEmoji";
 
 export default function ProjectNameStep() {
   const { projectName, updateField } = useAppStore();
@@ -23,17 +24,17 @@ export default function ProjectNameStep() {
 
       <div className="space-y-4">
         <div>
-          <motion.input
-            whileFocus={{ scale: 1.01 }}
-            type="text"
+          <InputWithEmoji
+            id="project-name-input"
             value={projectName}
             onChange={(e) => updateField("projectName", e.target.value)}
             placeholder="e.g., izinto-landing-page"
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="text-lg"
             autoFocus
           />
           <p className="text-xs text-gray-500 mt-2">
-            This will be the main title of your README.
+            This will be the main title of your README. Click the 😊 button to
+            add emojis.
           </p>
         </div>
 
