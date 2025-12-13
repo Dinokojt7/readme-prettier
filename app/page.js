@@ -1,65 +1,79 @@
-import Image from "next/image";
+"use client";
+
+import { AnimatePresence, motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import StepNavigation from "@/components/StepNavigation";
+import ProjectNameStep from "@/components/steps/ProjectNameStep";
+import PreviewToggle from "@/components/PreviewToggle";
+import useAppStore from "@/lib/store";
+
+const PreviewPanel = dynamic(() => import("@/components/PreviewPanel"), {
+  ssr: false,
+  loading: () => <div className="h-full bg-gray-900 rounded-lg" />,
+});
+
+// Component mapping for each step
+const stepComponents = {
+  projectName: ProjectNameStep,
+  description: dynamic(() => import("@/components/steps/DescriptionStep")),
+  badges: dynamic(() => import("@/components/steps/BadgesStep")),
+  features: dynamic(() => import("@/components/steps/FeaturesStep")),
+  installation: dynamic(() => import("@/components/steps/InstallationStep")),
+  environment: dynamic(() => import("@/components/steps/EnvironmentStep")),
+  preview: dynamic(() => import("@/components/steps/PreviewStep")),
+};
 
 export default function Home() {
+  const { currentStep } = useAppStore();
+  const CurrentStepComponent = stepComponents[currentStep] || ProjectNameStep;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.js file.
+    <>
+      <main className="min-h-screen p-6">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-4xl mx-auto mb-10 text-center"
+        >
+          <h1 className="text-5xl font-bold text-white mb-3 tracking-tight">
+            readme<span className="text-blue-400">polished</span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-gray-400 text-lg">
+            Craft your perfect README, one step at a time.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        </motion.header>
+
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Panel: Wizard */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-6 shadow-2xl"
+            >
+              <StepNavigation />
+              <div className="min-h-100">
+                <AnimatePresence mode="wait">
+                  <CurrentStepComponent key={currentStep} />
+                </AnimatePresence>
+              </div>
+            </motion.div>
+
+            {/* Right Panel: Preview */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gray-900/80 backdrop-blur-sm border border-gray-800 rounded-2xl p-6 shadow-2xl"
+            >
+              <PreviewPanel />
+            </motion.div>
+          </div>
         </div>
       </main>
-    </div>
+
+      <PreviewToggle />
+    </>
   );
 }
