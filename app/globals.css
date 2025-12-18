@@ -11,7 +11,7 @@
     overflow: hidden;
   }
 
-  /* Geometric dot pattern - FIXED VERSION */
+  /* Geometric dot pattern */
   body::before {
     content: "";
     position: fixed;
