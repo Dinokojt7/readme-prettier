@@ -44,7 +44,6 @@ export default function StepNavigation() {
         {steps.map((step, index) => (
           <motion.button
             key={step.id}
-            whileTap={{ scale: 0.95 }}
             onClick={() => goToStep(step.id)}
             className={`px-3 py-1.5 text-xs rounded-md transition-colors duration-200 ${
               step.id === currentStep

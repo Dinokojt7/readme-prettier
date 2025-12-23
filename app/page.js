@@ -67,12 +67,23 @@ export default function Home() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="max-w-7xl flex justify-between mx-auto border-b border-white/20 flex-shrink-0 w-full"
+          className="max-w-7xl flex items-start justify-between mx-auto pb-4 mb-6 border-b border-white/20 flex-shrink-0 w-full"
         >
-          <h1 className="text-xl md:text-xl font-bold text-white tracking-tight">
-            read
-          </h1>
-          <StepNavigation />
+          {/* Logo instead of text */}
+          <div className="flex items-center gap-3">
+            <div className="w-40 h-auto relative">
+              <img
+                src="/images/logomark.png"
+                alt="readmepolished"
+                className="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          {/* Move StepNavigation here (was in separate div below) */}
+          <div className="hidden lg:block">
+            <StepNavigation />
+          </div>
         </motion.header>
 
         {/* Main Content Area - Takes remaining space */}
